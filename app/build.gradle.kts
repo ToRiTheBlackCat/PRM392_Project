@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace = "com.trinhm.prm392_project"
+    namespace = "com.example.prn392_project"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.trinhm.prm392_project"
-        minSdk = 24
+        applicationId = "com.example.prn392_project"
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"

@@ -1,4 +1,4 @@
-package com.trinhm.prm392_project;
+package com.example.prn392_project;
 
 import org.junit.Test;
 
