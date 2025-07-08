@@ -7,5 +7,4 @@
     <item
         android:id="@+id/botNavCart"
         android:title="Cart" />
-    <item android:title="Item" />
 </menu>

@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.prn392_project.R;
-import com.example.prn392_project.data_classes.ItemDataAdapter;
+import com.example.prn392_project.data_classes.ProductDataAdapter;
 import com.example.prn392_project.data_classes.Product;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class CategoryFragment extends Fragment {
     private CategoryViewModel mViewModel;
 
     private RecyclerView rvProducts;
-    private ItemDataAdapter dataAdapter;
+    private ProductDataAdapter dataAdapter;
 
     public static CategoryFragment newInstance() {
         return new CategoryFragment();
@@ -47,14 +47,9 @@ public class CategoryFragment extends Fragment {
         rvProducts.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
         // Init list
-        var productList = new ArrayList<Product>();
-        productList.add(new Product("Áo thun đen.", 10000, R.drawable.ic_filter));
-        productList.add(new Product("Quần jean.", 660000, R.drawable.ic_filter));
-        productList.add(new Product("Áo khoác hoodie.", 75000, R.drawable.ic_filter));
-        productList.add(new Product("Quần kaki xám.", 90000, R.drawable.ic_filter));
-        productList.add(new Product("Áo khoác da đen.", 700000, R.drawable.ic_filter));
+        var productList = Product.getExampleProducts();
 
-        dataAdapter = new ItemDataAdapter(getContext(), productList);
+        dataAdapter = new ProductDataAdapter(getContext(), productList);
         rvProducts.setAdapter(dataAdapter);
     }
 }
