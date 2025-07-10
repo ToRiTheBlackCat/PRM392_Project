@@ -1,6 +1,7 @@
 package com.example.prn392_project.data_classes;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.prn392_project.IProductListFragment;
 import com.example.prn392_project.MainActivity;
 import com.example.prn392_project.R;
 import com.example.prn392_project.product_detail.ProductDetailFragment;
@@ -19,10 +21,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class ProductDataAdapter extends RecyclerView.Adapter<ProductDataAdapter.ViewHolder> {
-    private Context context;
+    private IProductListFragment context;
     private List<Product> productList;
 
-    public ProductDataAdapter(Context context, List<Product> productList) {
+    public ProductDataAdapter(IProductListFragment context, List<Product> productList) {
         this.context = context;
         this.productList = productList;
     }
@@ -30,7 +32,7 @@ public class ProductDataAdapter extends RecyclerView.Adapter<ProductDataAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_store_product, parent, false);
+        View view = LayoutInflater.from(context.GetContext()).inflate(R.layout.item_store_product, parent, false);
         return new ViewHolder(view);
     }
 
@@ -47,19 +49,22 @@ public class ProductDataAdapter extends RecyclerView.Adapter<ProductDataAdapter.
 
         // Click vào item để mở DetailActivity
         holder.itemView.setOnClickListener(v -> {
-            var mainActivity = (MainActivity)context;
-            var detailFragment = new ProductDetailFragment();
-            mainActivity.setCurrentFragment(detailFragment, true);
+            var mainActivity = (MainActivity) context.GetContext();
 
-//            Intent intent = new Intent(context, DetailActivity.class);
-//            intent.putExtra("product", product);
-//            context.startActivity(intent);
+            Bundle args = new Bundle();
+            args.putSerializable(ProductDetailFragment.KEY_PRODUCT, product);
+
+            mainActivity.navigate(context.GetProductDetailActionId(), args);
         });
     }
 
     @Override
     public int getItemCount() {
         return productList.size();
+    }
+
+    public void setProductList(List<Product> productList) {
+        this.productList = productList;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

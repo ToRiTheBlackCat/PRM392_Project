@@ -50,11 +50,11 @@ public class CartFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        mViewModel = new ViewModelProvider(this.getActivity()).get(CartViewModel.class);
         // TODO: Use the ViewModel
 
         // Setup references
-        ImageButton btnBack = view.findViewById(R.id.btnCartBack);
+        ImageButton btnBack = view.findViewById(R.id.btnCheckoutBack);
         Button btnCheckout = view.findViewById(R.id.btnCartCheckout);
         tvProductCount = view.findViewById(R.id.tvCartItemCount);
         tvTotalPrice = view.findViewById(R.id.tvCartTotalPrice);
@@ -70,14 +70,17 @@ public class CartFragment extends Fragment {
 
         // Handles checkout button
         btnCheckout.setOnClickListener(v -> {
-            // TODO: Implement checkout
+            // TODO: Implement checkout=
+            var mainActivity = (MainActivity) requireActivity();
+            mainActivity.navigate(R.id.action_cartFragment_to_checkoutFragment);
         });
 
         // Setup temp data
-        cartItemList = CartItem.getExampleCartItems();
+        cartItemList = mViewModel.getCartItems().getValue();
 
         dataAdapter = new CartDataAdapter(CartFragment.this, cartItemList);
         rvCartItems.setAdapter(dataAdapter);
+        notifyItemChanged(-1);
     }
 
     public void notifyItemChanged(int position) {

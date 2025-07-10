@@ -1,6 +1,5 @@
 package com.example.prn392_project.data_classes;
 
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -45,6 +44,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
 
         holder.tvName.setText(product.getProductName());
         holder.imgProduct.setImageResource(product.getProductImageId());
+        holder.tvProductSize.setText(cartItem.getSize());
 
         // Format to Vietnamese Dong
         Locale vietnamLocale = new Locale("vi", "VN");
@@ -109,6 +109,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
         TextView tvTotalPrice;
+        TextView tvProductSize;
         ImageView imgProduct;
         EditText etQuantity;
         Button btnAdd;
@@ -119,6 +120,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
             super(itemView);
             tvName = itemView.findViewById(R.id.tvCartProductName);
             tvTotalPrice = itemView.findViewById(R.id.tvCartProductPrice);
+            tvProductSize = itemView.findViewById(R.id.tvCartProductSize);
             imgProduct = itemView.findViewById(R.id.imgCartProductImage);
             etQuantity = itemView.findViewById(R.id.etCartProductQuantity);
             btnAdd = itemView.findViewById(R.id.btnCartAdd);

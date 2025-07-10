@@ -6,10 +6,12 @@ import java.util.Random;
 
 public class CartItem {
     private Product product;
+    private String size;
     private int quantity;
 
-    public CartItem(Product product, int quantity) {
+    public CartItem(Product product, String size, int quantity) {
         this.product = product;
+        this.size = size;
         this.quantity = quantity;
     }
 
@@ -19,6 +21,14 @@ public class CartItem {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 
     public int getQuantity() {
@@ -34,11 +44,12 @@ public class CartItem {
         int minQty = 1;
         int maxQty = 5;
         Random random = new Random();
+        var sizes = new String[]{"XS", "S", "L", "XL", "XXL"};
 
         List<CartItem> examples = new ArrayList<>();
-        for (var item : products){
+        for (var item : products) {
             int randomQuantity = random.nextInt(maxQty - minQty + 1) + minQty; // from 1 to 5
-            CartItem cartItem = new CartItem(item, randomQuantity);
+            CartItem cartItem = new CartItem(item, sizes[randomQuantity -1], randomQuantity);
             examples.add(cartItem);
         }
 

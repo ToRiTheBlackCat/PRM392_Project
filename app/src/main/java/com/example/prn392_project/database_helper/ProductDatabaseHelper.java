@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.prn392_project.R;
 import com.example.prn392_project.data_classes.Product;
 
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ public class ProductDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "ProductName";
     private static final String COLUMN_PRICE = "ProductPrice";
     private static final String COLUMN_DESC = "Description";
+    private static final String COLUMN_CATEGORYID = "CategoryId";
     private static final String COLUMN_IMAGE = "ProductImage";
 
     public ProductDatabaseHelper(Context context) {
@@ -39,6 +39,7 @@ public class ProductDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_PRICE + " INTEGER, " +
                 COLUMN_DESC + " TEXT, " +
+                COLUMN_CATEGORYID + " INTEGER, " +
                 COLUMN_IMAGE + " INTEGER)";
         db.execSQL(createTableProduct);
     }
@@ -57,29 +58,32 @@ public class ProductDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_PRICE + " INTEGER, " +
                 COLUMN_DESC + " TEXT, " +
+                COLUMN_CATEGORYID + " INTEGER, " +
                 COLUMN_IMAGE + " INTEGER)";
         db.execSQL(query);
     }
 
-    public void insertProduct(String name, int price, String description, int imageResourceId) {
+    public void insertProduct(Product product) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME, name);
-        values.put(COLUMN_PRICE, price);
-        values.put(COLUMN_DESC, description);
-        values.put(COLUMN_IMAGE, imageResourceId);
+        values.put(COLUMN_NAME, product.getProductName());
+        values.put(COLUMN_PRICE, product.getProductPrice());
+        values.put(COLUMN_DESC, product.getDescription());
+        values.put(COLUMN_CATEGORYID, product.getCategoryId());
+        values.put(COLUMN_IMAGE, product.getProductImageId());
         db.insert(TABLE_PRODUCT, null, values);
         db.close();
     }
 
-    public void updateProduct(int id, String name, int price, String description, int imageResourceId) {
+    public void updateProduct(Product product) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME, name);
-        values.put(COLUMN_PRICE, price);
-        values.put(COLUMN_DESC, description);
-        values.put(COLUMN_IMAGE, imageResourceId);
-        db.update(TABLE_PRODUCT, values, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
+        values.put(COLUMN_NAME, product.getProductName());
+        values.put(COLUMN_PRICE, product.getProductPrice());
+        values.put(COLUMN_DESC, product.getDescription());
+        values.put(COLUMN_CATEGORYID, product.getCategoryId());
+        values.put(COLUMN_IMAGE, product.getProductImageId());
+        db.update(TABLE_PRODUCT, values, COLUMN_ID + " = ?", new String[]{String.valueOf(product.getProductId())});
         db.close();
     }
 
@@ -97,7 +101,7 @@ public class ProductDatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Product> getAllUsers() {
+    public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_PRODUCT, null);
@@ -106,7 +110,8 @@ public class ProductDatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(1),
                     cursor.getInt(2),
                     cursor.getString(3),
-                    cursor.getInt(4)
+                    cursor.getInt(4),
+                    cursor.getInt(5)
             );
             product.setProductId(cursor.getInt(0));
 
@@ -129,6 +134,8 @@ public class ProductDatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(COLUMN_NAME, item.getProductName());
             values.put(COLUMN_PRICE, item.getProductPrice());
+            values.put(COLUMN_DESC, item.getDescription());
+            values.put(COLUMN_CATEGORYID, item.getCategoryId());
             values.put(COLUMN_IMAGE, item.getProductImageId());
             db.insert(TABLE_PRODUCT, null, values);
         }
