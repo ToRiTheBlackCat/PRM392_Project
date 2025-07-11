@@ -112,6 +112,7 @@ public class ProductDetailFragment extends Fragment {
             cartViewModel.addCartItem(newCartItem);
 
             // TODO: Implement logic for checking duplicated items (same Product and Size)
+            // TODO: <Kiểm tra trong cart đã có sản phẩm này chưa (CartItem có cùng Product và Size), nếu có thì disable button addCart>
 
             // Navigate to Cart
             MainActivity mainActivity = (MainActivity) getActivity();

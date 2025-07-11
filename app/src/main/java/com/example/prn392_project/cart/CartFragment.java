@@ -84,7 +84,7 @@ public class CartFragment extends Fragment {
     }
 
     public void notifyItemChanged(int position) {
-        dataAdapter.notifyItemChanged(position);
+        this.rvCartItems.post(() ->dataAdapter.notifyItemChanged(position));
         int totalProductCount = 0;
         int totalPrice = 0;
         for (var item : cartItemList) {
@@ -101,7 +101,7 @@ public class CartFragment extends Fragment {
     }
 
     public void notifyItemRemoved(int _position) {
-        dataAdapter.notifyDataSetChanged();
+        this.rvCartItems.post(() ->dataAdapter.notifyDataSetChanged());
         int totalProductCount = 0;
         int totalPrice = 0;
         for (var item : cartItemList) {

@@ -59,23 +59,26 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
         rvProducts.setLayoutManager(new GridLayoutManager(getContext(), 3));
         etFilterName = view.findViewById(R.id.etCategorySearchName);
 
-        // Set pass-in arguments
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            var name = bundle.getString(KEY_PRODUCT_NAME);
-            name = name != null ? name : "";
-            var categoryId = bundle.getInt(KEY_CATEGORY);
-            etFilterName.setText(name + " Category: " + categoryId);
-        }
-
         // Init list
         databaseHelper = new ProductDatabaseHelper(this.getContext());
         productList = databaseHelper.getAllProducts();
+
+        // Set pass-in arguments
+        Bundle bundle = getArguments();
+        int categoryId = -1;
+        if (bundle != null) {
+            var name = bundle.getString(KEY_PRODUCT_NAME);
+            name = name != null ? name : "";
+            categoryId = bundle.getInt(KEY_CATEGORY);
+            etFilterName.setText(name);
+        }
 
         dataAdapter = new ProductDataAdapter(CategoryFragment.this, productList);
         rvProducts.setAdapter(dataAdapter);
 
         // Handles filter input
+        // TODO: Implement product filtering
+        int finalCategoryId = categoryId;
         etFilterName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -89,14 +92,13 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                filterProducts();
+                filterProducts(s.toString(), finalCategoryId);
             }
         });
     }
 
-    private void filterProducts() {
-        var filter = etFilterName.getText().toString();
-        String[] words = filter.toLowerCase().split("\\s+");
+    private void filterProducts(String filter,int categoryId) {
+        String[] words = filter.trim().toLowerCase().split("\\s+");
 
         List<Product> filteredList = new ArrayList<>();
         List<Product> originalList = databaseHelper.getAllProducts();
@@ -110,7 +112,7 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
             }
         }
 
-        // TODO: Filter on other conditions (price range, category) in a popup menu
+        // TODO: Filter on other conditions (price range, category) in a popup menu <Hiện popup menu cho người dùng chọn khoảng giá và loại sản phẩm>
         // TODO: (Optional) Order the list (price, name) ascending or descending
 
         // Update the view

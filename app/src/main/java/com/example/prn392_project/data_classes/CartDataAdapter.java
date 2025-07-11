@@ -57,6 +57,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
         holder.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                holder.etQuantity.clearFocus();
                 cartItem.setQuantity(currentQuantity + 1);
                 context.notifyItemChanged(currentIndex);
             }
@@ -67,6 +68,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 if (currentQuantity > 1) {
+                    holder.etQuantity.clearFocus();
                     cartItem.setQuantity(currentQuantity - 1);
                     context.notifyItemChanged(currentIndex);
                 }
@@ -77,28 +79,50 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
         holder.btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                holder.etQuantity.clearFocus();
                 cartItemList.remove(currentIndex);
                 context.notifyItemRemoved(currentIndex);
             }
         });
 
         // Input quantity
-        holder.etQuantity.addTextChangedListener(new TextWatcher() {
+        holder.etQuantity.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    var input = holder.etQuantity.getText().toString();
+                    if (!input.isEmpty()) {
+                        var quantity = Integer.parseInt(input);
+                        if (quantity != cartItem.getQuantity()){
+                            cartItem.setQuantity(quantity);
+                            context.notifyItemChanged(currentIndex);
+                        }
+                    }
+                }
             }
         });
+//        holder.etQuantity.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if (!s.toString().isEmpty()) {
+//                    var quantity = Integer.parseInt(s.toString());
+//                    if (quantity != cartItem.getQuantity()){
+//                        cartItem.setQuantity(quantity);
+//                        context.notifyItemChanged(currentIndex);
+//                    }
+//                }
+//            }
+//        });
     }
 
     @Override

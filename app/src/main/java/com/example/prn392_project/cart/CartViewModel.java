@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartViewModel extends ViewModel {
-//    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>());
+    //    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>(CartItem.getExampleCartItems()));
 
     public LiveData<List<CartItem>> getCartItems() {
@@ -35,12 +35,15 @@ public class CartViewModel extends ViewModel {
         List<CartItem> current = new ArrayList<>(this.cartItems.getValue());
 
         for (CartItem item : current) {
-            if (item.getProduct().getProductId() == cartItem.getProduct().getProductId()) {
-                item.setSize(cartItem.getSize());
-                item.setQuantity(cartItem.getQuantity());
+            var product = item.getProduct();
+            if (product.getProductId() == cartItem.getProduct().getProductId()) {
+                if (item.getSize().equals(cartItem.getSize())) {
+                    item.setSize(cartItem.getSize());
+                    item.setQuantity(cartItem.getQuantity());
 
-                this.cartItems.setValue(current);
-                return;
+                    this.cartItems.setValue(current);
+                    return;
+                }
             }
         }
     }
