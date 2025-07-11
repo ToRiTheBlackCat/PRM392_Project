@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.prn392_project.IProductListFragment;
@@ -33,6 +35,10 @@ public class StoreFragment extends Fragment implements IProductListFragment {
     private ProductDatabaseHelper databaseHelper;
     private RecyclerView rvProducts;
     private ProductDataAdapter dataAdapter;
+    private LinearLayout filterPanel;
+    private SeekBar seekBarPrice ;
+    private TextView tvMaxPrice ;
+    private int maxPrice = 0;
 
     public static StoreFragment newInstance() {
         return new StoreFragment();
@@ -57,6 +63,47 @@ public class StoreFragment extends Fragment implements IProductListFragment {
         ImageButton btnFilter = view.findViewById(R.id.btnStoreFilter);
         GridLayout gridLayout = view.findViewById(R.id.gridCategories);
         EditText etName = view.findViewById(R.id.etStoreSearchName);
+        ImageView imgBanner = view.findViewById(R.id.imgBanner);
+        imgBanner.setImageResource(R.drawable.banner);
+        filterPanel = view.findViewById(R.id.filterPanel);
+        seekBarPrice = view.findViewById(R.id.seekBarPriceRange);
+        tvMaxPrice = view.findViewById(R.id.twMaxPrice);
+
+        //Handle dropdown filterPanel
+        btnFilter.setOnClickListener(v -> {
+            if (filterPanel.getVisibility() == View.GONE) {
+                filterPanel.setVisibility(View.VISIBLE);
+            } else {
+                filterPanel.setVisibility(View.GONE);
+            }
+        });
+
+        //Handle Slider of Price Range
+        seekBarPrice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                maxPrice = progress * 100_000; // Convert step to VND
+                tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Optional: add visual feedback
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Optional: apply filter now
+            }
+        });
+        //Set the Price when it first load, not change the seekbar
+        int initialProgress = seekBarPrice.getProgress();
+        int initialPrice = initialProgress * 100_000;
+        maxPrice = initialPrice;
+        tvMaxPrice.setText(String.format("%,d VNĐ", initialPrice));
+
+
 
         // Init category grid
         for (Category category : Category.GetAllCategories()) {
@@ -68,7 +115,19 @@ public class StoreFragment extends Fragment implements IProductListFragment {
 
                 // Set data to pass into destination fragment
                 Bundle bundle = new Bundle();
-                bundle.putInt(CategoryFragment.KEY_CATEGORY, category.getCategoryId());
+                int chosenCateId = category.getCategoryId();
+                bundle.putInt(CategoryFragment.KEY_CATEGORY, chosenCateId);
+
+                //Add text from search
+                String searchText = etName.getText().toString().trim();
+                if (!searchText.isEmpty()) {
+                    bundle.putString(CategoryFragment.KEY_PRODUCT_NAME, searchText);
+                }
+
+                //Add max price from seekbar
+                if (maxPrice != -1) {
+                    bundle.putInt(CategoryFragment.KEY_PRODUCT_MAX_PRICE, maxPrice);
+                }
 
                 assert mainActivity != null;
                 mainActivity.navigate(R.id.action_storeFragment_to_categoryFragment, bundle);
@@ -91,40 +150,40 @@ public class StoreFragment extends Fragment implements IProductListFragment {
         rvProducts.setAdapter(dataAdapter);
 
         // Handles when filter button is pressed
-        btnFilter.setOnClickListener(v -> {
-            var mainActivity = (MainActivity) getActivity();
-
-            // Set data to pass into destination fragment
-            Bundle bundle = new Bundle();
-            bundle.putString("Category", "Test String");
-
-            assert mainActivity != null;
-            mainActivity.navigate(R.id.categoryFragment, bundle);
-        });
+//        btnFilter.setOnClickListener(v -> {
+//            var mainActivity = (MainActivity) getActivity();
+//
+//            // Set data to pass into destination fragment
+//            Bundle bundle = new Bundle();
+//            bundle.putString("Category", "Test String");
+//
+//            assert mainActivity != null;
+//            mainActivity.navigate(R.id.categoryFragment, bundle);
+//        });
 
         // Handles Search
-        etName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    return;
-                }
-
-                var input = etName.getText().toString();
-                if (input.trim().isEmpty()) {
-                    return;
-                }
-
-                var mainActivity = (MainActivity) getActivity();
-
-                // Set data to pass into destination fragment
-                Bundle bundle = new Bundle();
-                bundle.putString(CategoryFragment.KEY_PRODUCT_NAME, input.trim());
-
-                assert mainActivity != null;
-                mainActivity.navigate(R.id.action_storeFragment_to_categoryFragment, bundle);
-            }
-        });
+//        etName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus) {
+//                    return;
+//                }
+//
+//                var input = etName.getText().toString();
+//                if (input.trim().isEmpty()) {
+//                    return;
+//                }
+//
+//                var mainActivity = (MainActivity) getActivity();
+//
+//                // Set data to pass into destination fragment
+//                Bundle bundle = new Bundle();
+//                bundle.putString(CategoryFragment.KEY_PRODUCT_NAME, input.trim());
+//
+//                assert mainActivity != null;
+//                mainActivity.navigate(R.id.action_storeFragment_to_categoryFragment, bundle);
+//            }
+//        });
     }
 
     @Override
