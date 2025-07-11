@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.example.prn392_project.MainActivity;
 import com.example.prn392_project.R;
 import com.example.prn392_project.cart.CartViewModel;
+import com.example.prn392_project.data_classes.CartItem;
+import com.example.prn392_project.data_classes.Product;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -26,6 +28,7 @@ import java.util.Locale;
 public class CheckoutFragment extends Fragment {
 
     private CartViewModel cartViewModel;
+    public static final String KEY_BUY_NOW_ITEM = "BuyNowCartItem";
 
     public static CheckoutFragment newInstance() {
         return new CheckoutFragment();
@@ -51,22 +54,39 @@ public class CheckoutFragment extends Fragment {
         Button btnSubmit = view.findViewById(R.id.btnCheckoutSubmit);
         ImageButton btnBack = view.findViewById(R.id.btnCheckoutBack);
 
-        var cartItemList = cartViewModel.getCartItems().getValue();
-        assert cartItemList != null;
-        if (!cartItemList.isEmpty()) {
-            int totalProductCount = 0;
-            int totalPrice = 0;
-            for (var item : cartItemList) {
-                totalPrice += item.getQuantity() * item.getProduct().getProductPrice();
-                totalProductCount += item.getQuantity();
-            }
+        Bundle bundle = getArguments();
+        CartItem cartItem = null;
+        if (bundle != null) {
+            cartItem = (CartItem) bundle.getSerializable(KEY_BUY_NOW_ITEM);
+        }
 
-            // Format to Vietnamese Dong
+        if (cartItem == null) {
+            var cartItemList = cartViewModel.getCartItems().getValue();
+            assert cartItemList != null;
+            if (!cartItemList.isEmpty()) {
+                int totalProductCount = 0;
+                int totalPrice = 0;
+                for (var item : cartItemList) {
+                    totalPrice += item.getQuantity() * item.getProduct().getProductPrice();
+                    totalProductCount += item.getQuantity();
+                }
+
+                // Format to Vietnamese Dong
+                Locale vietnamLocale = new Locale("vi", "VN");
+                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(vietnamLocale);
+                tvTotalAmount.setText(currencyFormatter.format(totalPrice));
+
+                tvCount.setText("" + totalProductCount);
+            }
+        } else {
+            var count = cartItem.getQuantity();
+            var totalPrice = count * cartItem.getProduct().getProductPrice();
+
             Locale vietnamLocale = new Locale("vi", "VN");
             NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(vietnamLocale);
             tvTotalAmount.setText(currencyFormatter.format(totalPrice));
 
-            tvCount.setText("" + totalProductCount);
+            tvCount.setText("" + count);
         }
 
         btnSubmit.setOnClickListener(v -> {
