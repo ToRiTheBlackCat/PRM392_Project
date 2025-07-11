@@ -1,10 +1,11 @@
 package com.example.prn392_project.data_classes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CartItem {
+public class CartItem implements Serializable {
     private Product product;
     private String size;
     private int quantity;
