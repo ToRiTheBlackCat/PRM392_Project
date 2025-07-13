@@ -3,6 +3,7 @@ package com.example.prn392_project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
@@ -21,6 +22,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.prn392_project.database_helper.ProductDatabaseHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNavView);
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavView);
         Button btnCart = findViewById(R.id.btnCart);
+        ImageView imgLogo = findViewById(R.id.imgLogo);
+        imgLogo.setImageResource(R.drawable.logo);
 
         // Set default fragment
         navigate(R.id.storeFragment, null, true);
