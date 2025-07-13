@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartViewModel extends ViewModel {
-    //    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>(CartItem.getExampleCartItems()));
+    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>());
+    //private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>(CartItem.getExampleCartItems()));
 
     public LiveData<List<CartItem>> getCartItems() {
 //        if (this.cartItems.getValue().isEmpty()) {
