@@ -28,6 +28,12 @@ import java.util.Locale;
 
 public class CartFragment extends Fragment {
 
+    private static final String KEY_PRODUCT = "Product";
+
+    private static final String KEY_SIZE = "Size";
+
+    private static final String KEY_QUANTITY = "Quantity";
+
     private CartViewModel mViewModel;
     private List<CartItem> cartItemList;
 

@@ -31,6 +31,8 @@ import java.util.Locale;
 public class CategoryFragment extends Fragment implements IProductListFragment {
     public static final String KEY_CATEGORY = "CategoryId";
     public static final String KEY_PRODUCT_NAME = "ProductName";
+    public static final String KEY_PRODUCT_MAX_PRICE = "ProductMaxPrice";
+
     private CategoryViewModel mViewModel;
     private List<Product> productList;
     private RecyclerView rvProducts;
@@ -63,22 +65,28 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
         databaseHelper = new ProductDatabaseHelper(this.getContext());
         productList = databaseHelper.getAllProducts();
 
+        dataAdapter = new ProductDataAdapter(CategoryFragment.this, productList);
+        rvProducts.setAdapter(dataAdapter);
+
         // Set pass-in arguments
         Bundle bundle = getArguments();
         int categoryId = -1;
+        int maxPrice = -1;
         if (bundle != null) {
             var name = bundle.getString(KEY_PRODUCT_NAME);
             name = name != null ? name : "";
             categoryId = bundle.getInt(KEY_CATEGORY);
             etFilterName.setText(name);
+            maxPrice = bundle.getInt(KEY_PRODUCT_MAX_PRICE);
+
+            filterProducts(name, categoryId,maxPrice);
         }
 
-        dataAdapter = new ProductDataAdapter(CategoryFragment.this, productList);
-        rvProducts.setAdapter(dataAdapter);
 
         // Handles filter input
         // TODO: Implement product filtering
         int finalCategoryId = categoryId;
+        int finalMaxPrice = maxPrice;
         etFilterName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -92,33 +100,40 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                filterProducts(s.toString(), finalCategoryId);
+                filterProducts(s.toString(), finalCategoryId,finalMaxPrice);
             }
         });
     }
 
-    private void filterProducts(String filter,int categoryId) {
+    private void filterProducts(String filter, int categoryId, int maxPrice) {
         String[] words = filter.trim().toLowerCase().split("\\s+");
 
         List<Product> filteredList = new ArrayList<>();
         List<Product> originalList = databaseHelper.getAllProducts();
 
-        // Filter base on name
         for (Product product : originalList) {
-            for (var word : words) {
-                if(product.getProductName().toLowerCase().contains(word)) {
-                    filteredList.add(product);
+            boolean nameMatches = false;
+
+            for (String word : words) {
+                if (product.getProductName().toLowerCase().contains(word)) {
+                    nameMatches = true;
+                    break;
                 }
             }
-        }
 
-        // TODO: Filter on other conditions (price range, category) in a popup menu <Hiện popup menu cho người dùng chọn khoảng giá và loại sản phẩm>
-        // TODO: (Optional) Order the list (price, name) ascending or descending
+            boolean categoryMatches = (categoryId == 8) || product.getCategoryId() == categoryId;
+            boolean priceMatches =  product.getProductPrice() <= maxPrice;
+
+            if (nameMatches && categoryMatches && priceMatches) {
+                filteredList.add(product);
+            }
+        }
 
         // Update the view
         dataAdapter.setProductList(filteredList);
         dataAdapter.notifyDataSetChanged();
     }
+
 
     @Override
     public int GetProductDetailActionId() {
