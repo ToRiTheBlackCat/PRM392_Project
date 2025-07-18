@@ -27,17 +27,21 @@ import com.example.prn392_project.database_helper.ProductDatabaseHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CategoryFragment extends Fragment implements IProductListFragment {
     public static final String KEY_CATEGORY = "CategoryId";
     public static final String KEY_PRODUCT_NAME = "ProductName";
     public static final String KEY_PRODUCT_MAX_PRICE = "ProductMaxPrice";
+    public static final String KEY_PRODUCT_MIN_PRICE = "ProductMinPrice";
 
-    private CategoryViewModel mViewModel;
+    public CategoryViewModel mViewModel;
     private List<Product> productList;
     private RecyclerView rvProducts;
     private ProductDataAdapter dataAdapter;
     private ProductDatabaseHelper databaseHelper;
+    private ExecutorService executorService;
     EditText etFilterName;
 
     public static CategoryFragment newInstance() {
@@ -60,6 +64,7 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
         rvProducts = view.findViewById(R.id.rvCategoryProducts);
         rvProducts.setLayoutManager(new GridLayoutManager(getContext(), 3));
         etFilterName = view.findViewById(R.id.etCategorySearchName);
+        executorService = Executors.newSingleThreadExecutor();
 
         // Init list
         databaseHelper = new ProductDatabaseHelper(this.getContext());
@@ -72,20 +77,23 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
         Bundle bundle = getArguments();
         int categoryId = -1;
         int maxPrice = -1;
+        int minPrice = 0;
         if (bundle != null) {
             var name = bundle.getString(KEY_PRODUCT_NAME);
             name = name != null ? name : "";
             categoryId = bundle.getInt(KEY_CATEGORY);
             etFilterName.setText(name);
             maxPrice = bundle.getInt(KEY_PRODUCT_MAX_PRICE);
+            minPrice = bundle.getInt(KEY_PRODUCT_MIN_PRICE);
 
-            filterProducts(name, categoryId,maxPrice);
+            filterProducts(name, categoryId, minPrice, maxPrice);
         }
 
 
         // Handles filter input
         // TODO: Implement product filtering
         int finalCategoryId = categoryId;
+        int finalMinPrice = minPrice;
         int finalMaxPrice = maxPrice;
         etFilterName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -100,38 +108,42 @@ public class CategoryFragment extends Fragment implements IProductListFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                filterProducts(s.toString(), finalCategoryId,finalMaxPrice);
+                filterProducts(s.toString(), finalCategoryId, finalMinPrice, finalMaxPrice);
             }
         });
     }
 
-    private void filterProducts(String filter, int categoryId, int maxPrice) {
-        String[] words = filter.trim().toLowerCase().split("\\s+");
+    private void filterProducts(String filter, int categoryId, int minPrice, int maxPrice) {
+        executorService.execute(() -> {
+            String[] words = filter.trim().toLowerCase().split("\\s+");
 
-        List<Product> filteredList = new ArrayList<>();
-        List<Product> originalList = databaseHelper.getAllProducts();
+            List<Product> filteredList = new ArrayList<>();
+            List<Product> originalList = databaseHelper.getAllProducts();
 
-        for (Product product : originalList) {
-            boolean nameMatches = false;
+            for (Product product : originalList) {
+                boolean nameMatches = false;
 
-            for (String word : words) {
-                if (product.getProductName().toLowerCase().contains(word)) {
-                    nameMatches = true;
-                    break;
+                for (String word : words) {
+                    if (product.getProductName().toLowerCase().contains(word)) {
+                        nameMatches = true;
+                        break;
+                    }
+                }
+
+                boolean categoryMatches = (categoryId == 8) || product.getCategoryId() == categoryId;
+                boolean priceMatches = product.getProductPrice() >= minPrice && product.getProductPrice() <= maxPrice;
+
+                if (nameMatches && categoryMatches && priceMatches) {
+                    filteredList.add(product);
                 }
             }
+            dataAdapter.setProductList(filteredList);
 
-            boolean categoryMatches = (categoryId == 8) || product.getCategoryId() == categoryId;
-            boolean priceMatches =  product.getProductPrice() <= maxPrice;
-
-            if (nameMatches && categoryMatches && priceMatches) {
-                filteredList.add(product);
-            }
-        }
-
-        // Update the view
-        dataAdapter.setProductList(filteredList);
-        dataAdapter.notifyDataSetChanged();
+            // Update the dataAdapter on the UI thread
+            requireActivity().runOnUiThread(() -> {
+                dataAdapter.notifyDataSetChanged();
+            });
+        });
     }
 
 

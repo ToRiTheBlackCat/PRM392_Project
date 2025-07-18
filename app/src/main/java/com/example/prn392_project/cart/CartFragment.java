@@ -28,7 +28,7 @@ import java.util.Locale;
 
 public class CartFragment extends Fragment {
 
-    private CartViewModel mViewModel;
+    public CartViewModel mViewModel;
     private List<CartItem> cartItemList;
 
     private TextView tvProductCount;
@@ -50,8 +50,7 @@ public class CartFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewModel = new ViewModelProvider(this.getActivity()).get(CartViewModel.class);
-        // TODO: Use the ViewModel
+        mViewModel = new ViewModelProvider(this.requireActivity()).get(CartViewModel.class);
 
         // Setup references
         ImageButton btnBack = view.findViewById(R.id.btnCheckoutBack);
@@ -60,6 +59,13 @@ public class CartFragment extends Fragment {
         tvTotalPrice = view.findViewById(R.id.tvCartTotalPrice);
         rvCartItems = view.findViewById(R.id.rvCartItems);
         rvCartItems.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        var cartItems = mViewModel.getCartItems().getValue();
+        assert cartItems != null;
+        if (cartItems.isEmpty()) {
+            btnCheckout.setEnabled(false);
+            btnCheckout.setAlpha(0.5f);
+        }
 
         // Handles back button
         btnBack.setOnClickListener(v -> {
@@ -75,16 +81,21 @@ public class CartFragment extends Fragment {
             mainActivity.navigate(R.id.action_cartFragment_to_checkoutFragment);
         });
 
-        // Setup temp data
+        // Get cartItems from viewModel
         cartItemList = mViewModel.getCartItems().getValue();
-
         dataAdapter = new CartDataAdapter(CartFragment.this, cartItemList);
         rvCartItems.setAdapter(dataAdapter);
-        notifyItemChanged(-1);
+
+        // Update UI when ViewModel's CartItems is updated
+        mViewModel.getCartItems().observe(getViewLifecycleOwner(), updated -> {
+            cartItemList = updated;
+            dataAdapter.setCartList(cartItemList);
+            notifyItemChanged();
+        });
     }
 
-    public void notifyItemChanged(int position) {
-        this.rvCartItems.post(() ->dataAdapter.notifyItemChanged(position));
+    public void notifyItemChanged() {
+        dataAdapter.notifyDataSetChanged();
         int totalProductCount = 0;
         int totalPrice = 0;
         for (var item : cartItemList) {
@@ -93,26 +104,7 @@ public class CartFragment extends Fragment {
         }
 
         // Format to Vietnamese Dong
-        Locale vietnamLocale = new Locale("vi", "VN");
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(vietnamLocale);
-        tvTotalPrice.setText(currencyFormatter.format(totalPrice));
-
-        tvProductCount.setText("" + totalProductCount);
-    }
-
-    public void notifyItemRemoved(int _position) {
-        this.rvCartItems.post(() ->dataAdapter.notifyDataSetChanged());
-        int totalProductCount = 0;
-        int totalPrice = 0;
-        for (var item : cartItemList) {
-            totalPrice += item.getQuantity() * item.getProduct().getProductPrice();
-            totalProductCount += item.getQuantity();
-        }
-
-        // Format to Vietnamese Dong
-        Locale vietnamLocale = new Locale("vi", "VN");
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(vietnamLocale);
-        tvTotalPrice.setText(currencyFormatter.format(totalPrice));
+        tvTotalPrice.setText(String.format("%,d VNĐ", totalPrice));
 
         tvProductCount.setText("" + totalProductCount);
     }

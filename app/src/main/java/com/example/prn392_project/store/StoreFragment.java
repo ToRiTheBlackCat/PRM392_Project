@@ -29,6 +29,11 @@ import com.example.prn392_project.category.CategoryFragment;
 import com.example.prn392_project.data_classes.Category;
 import com.example.prn392_project.data_classes.ProductDataAdapter;
 import com.example.prn392_project.database_helper.ProductDatabaseHelper;
+import com.google.android.material.slider.RangeSlider;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
 
 public class StoreFragment extends Fragment implements IProductListFragment {
     private StoreViewModel mViewModel;
@@ -36,9 +41,10 @@ public class StoreFragment extends Fragment implements IProductListFragment {
     private RecyclerView rvProducts;
     private ProductDataAdapter dataAdapter;
     private LinearLayout filterPanel;
-    private SeekBar seekBarPrice ;
-    private TextView tvMaxPrice ;
+    private TextView tvMaxPrice;
+    private TextView tvMinPrice;
     private int maxPrice = 0;
+    private int minPrice = 0;
 
     public static StoreFragment newInstance() {
         return new StoreFragment();
@@ -66,8 +72,29 @@ public class StoreFragment extends Fragment implements IProductListFragment {
         ImageView imgBanner = view.findViewById(R.id.imgBanner);
         imgBanner.setImageResource(R.drawable.banner);
         filterPanel = view.findViewById(R.id.filterPanel);
-        seekBarPrice = view.findViewById(R.id.seekBarPriceRange);
-        tvMaxPrice = view.findViewById(R.id.twMaxPrice);
+        tvMaxPrice = view.findViewById(R.id.tvMaxPrice);
+        tvMinPrice = view.findViewById(R.id.tvMinPrice);
+        RangeSlider sliderPriceRange = view.findViewById(R.id.rSliderPriceRance);
+
+        // Setup Initial Price range
+        var initialValues = sliderPriceRange.getValues();
+        minPrice = (int) (initialValues.get(0) * 100_000);
+        maxPrice = (int) (initialValues.get(1) * 100_000);
+        tvMinPrice.setText(String.format("%,d VNĐ", minPrice));
+        tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
+
+        // Handle PriceSlider Range Change
+        sliderPriceRange.addOnChangeListener(new RangeSlider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
+                List<Float> values = slider.getValues();
+
+                minPrice = (int) (values.get(0) * 100_000);
+                maxPrice = (int) (values.get(1) * 100_000);
+                tvMinPrice.setText(String.format("%,d VNĐ", minPrice));
+                tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
+            }
+        });
 
         //Handle dropdown filterPanel
         btnFilter.setOnClickListener(v -> {
@@ -77,33 +104,6 @@ public class StoreFragment extends Fragment implements IProductListFragment {
                 filterPanel.setVisibility(View.GONE);
             }
         });
-
-        //Handle Slider of Price Range
-        seekBarPrice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                maxPrice = progress * 100_000; // Convert step to VND
-                tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // Optional: add visual feedback
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // Optional: apply filter now
-            }
-        });
-        //Set the Price when it first load, not change the seekbar
-        int initialProgress = seekBarPrice.getProgress();
-        int initialPrice = initialProgress * 100_000;
-        maxPrice = initialPrice;
-        tvMaxPrice.setText(String.format("%,d VNĐ", initialPrice));
-
-
 
         // Init category grid
         for (Category category : Category.GetAllCategories()) {
@@ -126,6 +126,7 @@ public class StoreFragment extends Fragment implements IProductListFragment {
 
                 //Add max price from seekbar
                 if (maxPrice != -1) {
+                    bundle.putInt(CategoryFragment.KEY_PRODUCT_MIN_PRICE, minPrice);
                     bundle.putInt(CategoryFragment.KEY_PRODUCT_MAX_PRICE, maxPrice);
                 }
 
@@ -142,48 +143,19 @@ public class StoreFragment extends Fragment implements IProductListFragment {
             gridLayout.addView(itemView);
         }
 
-        // Init list
-        databaseHelper.generateInitData();
-        var productList = databaseHelper.getAllProducts();
+        dataAdapter = new ProductDataAdapter(this, new ArrayList<>());
+        // Init list using multithreading
+        Executors.newSingleThreadExecutor().execute(() -> {
+            databaseHelper.generateInitData();
+            var productList = databaseHelper.getAllProducts();
+            dataAdapter.setProductList(productList);
 
-        dataAdapter = new ProductDataAdapter(this, productList);
-        rvProducts.setAdapter(dataAdapter);
-
-        // Handles when filter button is pressed
-//        btnFilter.setOnClickListener(v -> {
-//            var mainActivity = (MainActivity) getActivity();
-//
-//            // Set data to pass into destination fragment
-//            Bundle bundle = new Bundle();
-//            bundle.putString("Category", "Test String");
-//
-//            assert mainActivity != null;
-//            mainActivity.navigate(R.id.categoryFragment, bundle);
-//        });
-
-        // Handles Search
-//        etName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if (hasFocus) {
-//                    return;
-//                }
-//
-//                var input = etName.getText().toString();
-//                if (input.trim().isEmpty()) {
-//                    return;
-//                }
-//
-//                var mainActivity = (MainActivity) getActivity();
-//
-//                // Set data to pass into destination fragment
-//                Bundle bundle = new Bundle();
-//                bundle.putString(CategoryFragment.KEY_PRODUCT_NAME, input.trim());
-//
-//                assert mainActivity != null;
-//                mainActivity.navigate(R.id.action_storeFragment_to_categoryFragment, bundle);
-//            }
-//        });
+            if (isAdded()) {
+                requireActivity().runOnUiThread(() -> {
+                    rvProducts.setAdapter(dataAdapter);
+                });
+            }
+        });
     }
 
     @Override

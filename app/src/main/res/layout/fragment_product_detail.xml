@@ -165,6 +165,15 @@
             </LinearLayout>
         </ScrollView>
 
+        <TextView
+            android:id="@+id/tvDetailCartWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="30dp"
+            android:text="A Product with this Size is already in your Cart"
+            android:textColor="#F44336"
+            android:textStyle="bold" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -178,7 +187,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:backgroundTint="#293B68"
-                android:text="Add To Cart"
+                android:text="Add Cart"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 

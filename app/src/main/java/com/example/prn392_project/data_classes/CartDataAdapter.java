@@ -47,9 +47,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
         holder.tvProductSize.setText(cartItem.getSize());
 
         // Format to Vietnamese Dong
-        Locale vietnamLocale = new Locale("vi", "VN");
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(vietnamLocale);
-        holder.tvTotalPrice.setText(currencyFormatter.format(product.getProductPrice()));
+        holder.tvTotalPrice.setText(String.format("%,d VNĐ", product.getProductPrice()));
 
         var currentQuantity = cartItem.getQuantity();
         holder.etQuantity.setText(Integer.toString(currentQuantity));
@@ -59,7 +57,8 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
             public void onClick(View v) {
                 holder.etQuantity.clearFocus();
                 cartItem.setQuantity(currentQuantity + 1);
-                context.notifyItemChanged(currentIndex);
+//                context.notifyItemChanged(currentIndex);
+                context.mViewModel.updateCartItem(cartItem);
             }
         });
 
@@ -70,7 +69,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
                 if (currentQuantity > 1) {
                     holder.etQuantity.clearFocus();
                     cartItem.setQuantity(currentQuantity - 1);
-                    context.notifyItemChanged(currentIndex);
+                    context.mViewModel.updateCartItem(cartItem);
                 }
             }
         });
@@ -80,8 +79,9 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 holder.etQuantity.clearFocus();
-                cartItemList.remove(currentIndex);
-                context.notifyItemRemoved(currentIndex);
+//                cartItemList.remove(currentIndex);
+//                context.notifyItemRemoved(currentIndex);
+                context.mViewModel.removeCartItem(cartItem);
             }
         });
 
@@ -95,39 +95,22 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.ViewHo
                         var quantity = Integer.parseInt(input);
                         if (quantity != cartItem.getQuantity()){
                             cartItem.setQuantity(quantity);
-                            context.notifyItemChanged(currentIndex);
+                            context.mViewModel.updateCartItem(cartItem);
                         }
                     }
                 }
             }
         });
-//        holder.etQuantity.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if (!s.toString().isEmpty()) {
-//                    var quantity = Integer.parseInt(s.toString());
-//                    if (quantity != cartItem.getQuantity()){
-//                        cartItem.setQuantity(quantity);
-//                        context.notifyItemChanged(currentIndex);
-//                    }
-//                }
-//            }
-//        });
     }
 
     @Override
     public int getItemCount() {
         return cartItemList.size();
+    }
+
+
+    public void setCartList(List<CartItem> cartItemList) {
+        this.cartItemList = cartItemList;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
