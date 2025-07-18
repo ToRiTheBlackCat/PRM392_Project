@@ -37,6 +37,7 @@
         android:label="fragment_product_detail"
         tools:layout="@layout/fragment_product_detail" >
     </fragment>
+
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.example.prn392_project.cart.CartFragment"
@@ -48,9 +49,21 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
+
     <fragment
         android:id="@+id/checkoutFragment"
         android:name="com.example.prn392_project.checkout.CheckoutFragment"
         android:label="fragment_checkout"
-        tools:layout="@layout/fragment_checkout" />
+        tools:layout="@layout/fragment_checkout">
+        <action
+            android:id="@+id/action_checkoutFragment_to_billFragment"
+            app:destination="@id/billFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/billFragment"
+        android:name="com.example.prn392_project.bill.BillFragment"
+        android:label="fragment_bill"
+        tools:layout="@layout/fragment_bill">
+    </fragment>
+
 </navigation>

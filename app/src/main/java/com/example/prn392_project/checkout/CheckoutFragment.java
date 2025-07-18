@@ -1,5 +1,9 @@
 package com.example.prn392_project.checkout;
 
+import static com.example.prn392_project.bill.BillFragment.KEY_CUST_ADDR;
+import static com.example.prn392_project.bill.BillFragment.KEY_CUST_NAME;
+import static com.example.prn392_project.bill.BillFragment.KEY_CUST_PHONE;
+
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -113,6 +117,13 @@ public class CheckoutFragment extends Fragment {
             if (isValid) {
                 // TODO: Generate bill
                 var mainActivity = (MainActivity) requireActivity();
+
+                Bundle billBundle = new Bundle();
+                billBundle.putString(KEY_CUST_NAME, name);
+                billBundle.putString(KEY_CUST_PHONE, phone);
+                billBundle.putString(KEY_CUST_ADDR, address);
+
+                mainActivity.navigate(R.id.action_checkoutFragment_to_billFragment, billBundle);
             }
         });
 
