@@ -39,7 +39,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/billProductList"
+            android:id="@+id/rvBillProduct"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="6"
