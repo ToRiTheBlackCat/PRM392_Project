@@ -101,7 +101,9 @@
                 android:layout_weight="1"
                 android:background="@android:drawable/editbox_background"
                 android:backgroundTint="#293B68"
+                android:padding="0dp"
                 android:text="+"
+                android:textAlignment="gravity"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
 
@@ -127,8 +129,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:background="@android:drawable/editbox_background"
-                android:backgroundTint="#293B68"
+                android:backgroundTint="#A01F1F"
+                android:padding="0dp"
                 android:text="-"
+                android:textAlignment="gravity"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
 
@@ -136,14 +140,14 @@
 
         <Button
             android:id="@+id/btnCartRemove"
-            android:layout_width="41dp"
-            android:layout_height="28dp"
+            android:layout_width="31dp"
+            android:layout_height="38dp"
             android:layout_margin="4dp"
             android:backgroundTint="#293B68"
             android:padding="0dp"
-            android:text="Remove"
+            android:text="🗑️"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="#FFFFFF"
-            android:textSize="8sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

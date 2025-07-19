@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartViewModel extends ViewModel {
-    //    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>(CartItem.getExampleCartItems()));
+        private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>());
+//    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>(CartItem.getExampleCartItems()));
 
     public LiveData<List<CartItem>> getCartItems() {
 //        if (this.cartItems.getValue().isEmpty()) {
@@ -54,6 +54,7 @@ public class CartViewModel extends ViewModel {
         for (CartItem item : current) {
             if (item.getProduct().getProductId() == cartItem.getProduct().getProductId()) {
                 current.remove(item);
+
                 this.cartItems.setValue(current);
                 return;
             }
