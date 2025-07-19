@@ -29,6 +29,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    packaging {
+        resources {
+            excludes += "META-INF/NOTICE.md"
+            excludes += "META-INF/LICENSE.md"
+        }
+    }
+
 }
 
 dependencies {
@@ -47,5 +54,9 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(libs.work.runtime); // Worker dependency
+
+    implementation ("com.sun.mail:android-mail:1.6.7");
+    implementation ("com.sun.mail:android-activation:1.6.7");
+
 
 }

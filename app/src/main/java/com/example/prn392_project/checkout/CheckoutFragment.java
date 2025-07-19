@@ -1,5 +1,9 @@
 package com.example.prn392_project.checkout;
 
+import static com.example.prn392_project.bill.BillFragment.KEY_CUST_ADDR;
+import static com.example.prn392_project.bill.BillFragment.KEY_CUST_NAME;
+import static com.example.prn392_project.bill.BillFragment.KEY_CUST_PHONE;
+
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -29,7 +33,7 @@ public class CheckoutFragment extends Fragment {
 
     private CartViewModel cartViewModel;
     public static final String KEY_BUY_NOW_ITEM = "BuyNowCartItem";
-
+    private CartItem buyNowItem;
     public static CheckoutFragment newInstance() {
         return new CheckoutFragment();
     }
@@ -56,10 +60,11 @@ public class CheckoutFragment extends Fragment {
 
         Bundle bundle = getArguments();
         CartItem cartItem = null;
-        if (bundle != null) {
+        if (bundle != null) { //this bundle only exist if passed from itemdetail
             cartItem = (CartItem) bundle.getSerializable(KEY_BUY_NOW_ITEM);
         }
 
+        // this part is for if there's no buy now item, get everything in cart instead?
         if (cartItem == null) {
             var cartItemList = cartViewModel.getCartItems().getValue();
             assert cartItemList != null;
@@ -78,6 +83,8 @@ public class CheckoutFragment extends Fragment {
 
                 tvCount.setText("" + totalProductCount);
             }
+
+            //this logic is for buy now item i think?
         } else {
             var count = cartItem.getQuantity();
             var totalPrice = count * cartItem.getProduct().getProductPrice();
@@ -86,6 +93,11 @@ public class CheckoutFragment extends Fragment {
             NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(vietnamLocale);
             tvTotalAmount.setText(currencyFormatter.format(totalPrice));
 
+            buyNowItem = new CartItem(
+                    cartItem.getProduct(),
+                    cartItem.getSize(),
+                    cartItem.getQuantity()
+            );
             tvCount.setText("" + count);
         }
 
@@ -113,6 +125,17 @@ public class CheckoutFragment extends Fragment {
             if (isValid) {
                 // TODO: Generate bill
                 var mainActivity = (MainActivity) requireActivity();
+
+                Bundle billBundle = new Bundle();
+                billBundle.putString(KEY_CUST_NAME, name);
+                billBundle.putString(KEY_CUST_PHONE, phone);
+                billBundle.putString(KEY_CUST_ADDR, address);
+                // If BUY NOW item exist, pass that as well
+                if(buyNowItem != null){
+                    billBundle.putSerializable(KEY_BUY_NOW_ITEM, buyNowItem);
+                }
+                // Otherwise, BillFragment will get its list from cart similar to this
+                mainActivity.navigate(R.id.action_checkoutFragment_to_billFragment, billBundle);
             }
         });
 
