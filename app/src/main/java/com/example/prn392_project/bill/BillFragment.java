@@ -22,8 +22,11 @@ import com.example.prn392_project.R;
 import com.example.prn392_project.cart.CartViewModel;
 import com.example.prn392_project.data_classes.CartDataAdapter;
 import com.example.prn392_project.data_classes.CartItem;
+import com.example.prn392_project.email_sender.EmailSender;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,14 +72,18 @@ public class BillFragment extends Fragment {
         rvBillItems.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Bundle bundle = getArguments();
-        if(bundle != null){
+        if (bundle != null) {
             custName = bundle.getString(KEY_CUST_NAME);
             custPhone = bundle.getString(KEY_CUST_PHONE);
             custAddr = bundle.getString(KEY_CUST_ADDR);
+
+            tvCustName.setText(custName);
+            tvCustPhone.setText(custPhone);
+            tvCustAddr.setText(custAddr);
         }
 
         CartItem cartItem = null;
-        if(bundle.containsKey(KEY_BUY_NOW_ITEM)){
+        if (bundle.containsKey(KEY_BUY_NOW_ITEM)) {
             cartItem = (CartItem) bundle.getSerializable(KEY_BUY_NOW_ITEM);
         }
 
@@ -103,10 +110,15 @@ public class BillFragment extends Fragment {
                 adapter.notifyDataSetChanged();
 
                 tvBillItemCount.setText("" + totalProductCount);
+                EmailSender.sendEmail(custAddr, "Checkout Billing", custName, custPhone, custAddr, cartItemList);
+
             }
         } else {
             var count = cartItem.getQuantity();
             var totalPrice = count * cartItem.getProduct().getProductPrice();
+
+            adapter = new BillAdapter(BillFragment.this, new ArrayList<>(Collections.singletonList(cartItem)));
+            rvBillItems.setAdapter(adapter);
 
             Locale vietnamLocale = new Locale("vi", "VN");
             NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(vietnamLocale);
@@ -118,7 +130,9 @@ public class BillFragment extends Fragment {
                     cartItem.getQuantity()
             );
             tvBillItemCount.setText("" + count);
+            EmailSender.sendEmail(custAddr, "Checkout Billing", custName, custPhone, custAddr, cartItemList);
         }
+
 
         // Handles back button
         btnBack.setOnClickListener(v -> {
