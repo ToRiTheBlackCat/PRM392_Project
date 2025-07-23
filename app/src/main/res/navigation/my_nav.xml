@@ -29,7 +29,11 @@
         tools:layout="@layout/fragment_category" >
         <action
             android:id="@+id/action_categoryFragment_to_productDetailFragment"
-            app:destination="@id/productDetailFragment" />
+            app:destination="@id/productDetailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/productDetailFragment"
@@ -64,6 +68,14 @@
         android:name="com.example.prn392_project.bill.BillFragment"
         android:label="fragment_bill"
         tools:layout="@layout/fragment_bill">
+        <action
+            android:id="@+id/action_billFragment_to_storeFragment"
+            app:destination="@id/storeFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/storeFragment" />
     </fragment>
 
 </navigation>

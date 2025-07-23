@@ -76,35 +76,6 @@ public class StoreFragment extends Fragment implements IProductListFragment {
         tvMinPrice = view.findViewById(R.id.tvMinPrice);
         RangeSlider sliderPriceRange = view.findViewById(R.id.rSliderPriceRance);
 
-        // Setup Initial Price range
-        var initialValues = sliderPriceRange.getValues();
-        minPrice = (int) (initialValues.get(0) * 100_000);
-        maxPrice = (int) (initialValues.get(1) * 100_000);
-        tvMinPrice.setText(String.format("%,d VNĐ", minPrice));
-        tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
-
-        // Handle PriceSlider Range Change
-        sliderPriceRange.addOnChangeListener(new RangeSlider.OnChangeListener() {
-            @Override
-            public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
-                List<Float> values = slider.getValues();
-
-                minPrice = (int) (values.get(0) * 100_000);
-                maxPrice = (int) (values.get(1) * 100_000);
-                tvMinPrice.setText(String.format("%,d VNĐ", minPrice));
-                tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
-            }
-        });
-
-        //Handle dropdown filterPanel
-        btnFilter.setOnClickListener(v -> {
-            if (filterPanel.getVisibility() == View.GONE) {
-                filterPanel.setVisibility(View.VISIBLE);
-            } else {
-                filterPanel.setVisibility(View.GONE);
-            }
-        });
-
         // Init category grid
         for (Category category : Category.GetAllCategories()) {
             View itemView = LayoutInflater.from(this.getContext()).inflate(R.layout.item_category, gridLayout, false);
@@ -142,6 +113,37 @@ public class StoreFragment extends Fragment implements IProductListFragment {
 
             gridLayout.addView(itemView);
         }
+
+        // Setup Initial Price range
+        var initialValues = sliderPriceRange.getValues();
+        minPrice = (int) (initialValues.get(0) * 100_000);
+        maxPrice = (int) (initialValues.get(1) * 100_000);
+        tvMinPrice.setText(String.format("%,d VNĐ", minPrice));
+        tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
+
+        // Handle PriceSlider Range Change
+        sliderPriceRange.addOnChangeListener(new RangeSlider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
+                List<Float> values = slider.getValues();
+
+                minPrice = (int) (values.get(0) * 100_000);
+                maxPrice = (int) (values.get(1) * 100_000);
+                tvMinPrice.setText(String.format("%,d VNĐ", minPrice));
+                tvMaxPrice.setText(String.format("%,d VNĐ", maxPrice));
+            }
+        });
+
+        //Handle dropdown filterPanel
+        btnFilter.setOnClickListener(v -> {
+            if (filterPanel.getVisibility() == View.GONE) {
+                filterPanel.setVisibility(View.VISIBLE);
+            } else {
+                filterPanel.setVisibility(View.GONE);
+            }
+        });
+
+
 
         dataAdapter = new ProductDataAdapter(this, new ArrayList<>());
         // Init list using multithreading

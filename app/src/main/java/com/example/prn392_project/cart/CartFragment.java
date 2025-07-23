@@ -48,14 +48,24 @@ public class CartFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+
+        ((MainActivity)requireActivity()).setCartBtnVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this.requireActivity()).get(CartViewModel.class);
+
+        ((MainActivity)requireActivity()).setCartBtnVisibility(View.INVISIBLE);
 
         // Setup references
         ImageButton btnBack = view.findViewById(R.id.btnCheckoutBack);
         Button btnCheckout = view.findViewById(R.id.btnCartCheckout);
         tvProductCount = view.findViewById(R.id.tvCartItemCount);
+
         tvTotalPrice = view.findViewById(R.id.tvCartTotalPrice);
         rvCartItems = view.findViewById(R.id.rvCartItems);
         rvCartItems.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -112,6 +112,7 @@ public class BillFragment extends Fragment {
                 tvBillItemCount.setText("" + totalProductCount);
                 EmailSender.sendEmail(custAddr, "Checkout Billing", custName, custPhone, custAddr, cartItemList);
 
+                mViewModel.clearCartItems();
             }
         } else {
             var count = cartItem.getQuantity();
@@ -129,6 +130,8 @@ public class BillFragment extends Fragment {
                     cartItem.getSize(),
                     cartItem.getQuantity()
             );
+            cartItemList = new ArrayList<>(Collections.singletonList(cartItem));
+
             tvBillItemCount.setText("" + count);
             EmailSender.sendEmail(custAddr, "Checkout Billing", custName, custPhone, custAddr, cartItemList);
         }
@@ -138,7 +141,8 @@ public class BillFragment extends Fragment {
         btnBack.setOnClickListener(v -> {
             var mainActivity = (MainActivity) getActivity();
             assert mainActivity != null;
-            mainActivity.goBack();
+//            mainActivity.goBack();
+            mainActivity.navigate(R.id.action_billFragment_to_storeFragment, null, true);
         });
     }
 }

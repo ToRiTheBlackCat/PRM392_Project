@@ -60,4 +60,8 @@ public class CartViewModel extends ViewModel {
             }
         }
     }
+
+    public void clearCartItems() {
+        this.cartItems.setValue(new ArrayList<>());
+    }
 }

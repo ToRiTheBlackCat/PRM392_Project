@@ -1,5 +1,8 @@
 package com.example.prn392_project;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -120,4 +123,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
             );
+
+    public void setCartBtnVisibility(int visibility) {
+        Button btnCart = findViewById(R.id.btnCart);
+        btnCart.setVisibility(visibility);
+    }
 }
